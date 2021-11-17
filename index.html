@@ -1,5 +1,6 @@
 <html>
 <head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" >
   <title>Webcam Image Classification using a pre-trained customized model and p5.js</title>
@@ -11,6 +12,24 @@
 	
 </head>
 <body>
+<script>
+const handleCharacteristicValueChanged = (event) => {
+   console.log(event.target.value.getUint8(0) + '%');
+};
+const connectToDeviceAndSubscribeToUpdates = async () => {
+   const device = await navigator.bluetooth
+      .requestDevice({
+          filters: [{ services: ['battery_service']}
+      });
+   const server = await device.gatt.connect();
+   const service = await server.getPrimaryService('battery_service');
+   const characteristic = await service.getCharacteristic('battery_level');
+   characteristic.startNotifications();
+   characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
+   const reading = await characteristic.readValue();
+   console.log(reading.getUint8(0) + '%');
+};
+</script>
   <script src="sketch.js"></script>
   <div class="APP">
 	<h1>Get Device Battery Info Over Blurtooth</h1>
